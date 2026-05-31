@@ -8,7 +8,7 @@ public class Produto {
     @Id // a tabela produtos terá uma chave primária do tipo Long
     @GeneratedValue(strategy = GenerationType.IDENTITY) //a chave primária será auto-incremento
     private Long id;
-    @Column(nullable = true) // nome deve ser único na tabela e não nulo
+    @Column(nullable = true, unique = true) // nome deve ser único na tabela e não nulo
     private String nome;
     @Column(name = "valor") //preço será salvo na coluna de nome valor
     private Double preco;
@@ -17,6 +17,8 @@ public class Produto {
         this.nome = nome;
         this.preco = preco;
     }
+
+    protected Produto(){}
 
     public Long getId(){
         return id;

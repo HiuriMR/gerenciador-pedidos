@@ -27,6 +27,6 @@ public class GerenciadorPedidosApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		Principal principal = new Principal(produtoRepository,categoriaRepository,pedidoRepository);
-
+		principal.exibir();
 	}
 }

@@ -18,6 +18,8 @@ public class Pedido {
         this.data = data;
     }
 
+    protected Pedido(){}
+
     public Long getId(){
         return id;
     }
