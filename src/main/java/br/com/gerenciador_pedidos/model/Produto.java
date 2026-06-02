@@ -1,35 +1,74 @@
 package br.com.gerenciador_pedidos.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
-@Entity // a classe será uma tabela
-@Table(name = "produtos") // o nome da tabela será produtos
+/**
+ * Entidade Produto gerenciada pelo JPA/Hibernate.
+ * Comentários explicam comportamento relevante do mapeamento.
+ */
+@Entity
+@Table(name = "produtos")
 public class Produto {
-    @Id // a tabela produtos terá uma chave primária do tipo Long
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //a chave primária será auto-incremento
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = true, unique = true) // nome deve ser único na tabela e não nulo
+
+    // unique = true cria constraint no banco; tente evitar inserir duplicatas sem checar.
+    @Column(nullable = false, unique = true)
     private String nome;
-    @Column(name = "valor") //preço será salvo na coluna de nome valor
+
+    // coluna 'valor' no banco
+    @Column(name = "valor")
     private Double preco;
 
-    public Produto(String nome, Double preco){
+    // ManyToOne: muitos produtos pertencem a uma categoria.
+    // Por padrão ManyToOne é EAGER, então categoria normalmente é carregada junto.
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
+
+    // ManyToOne para fornecedor; também carregado por padrão.
+    @ManyToOne
+    @JoinColumn(name = "fornecedor_id")
+    private Fornecedor fornecedor;
+
+    // Construtor para uso em código (antes de persistir)
+    public Produto(String nome, Double preco, Categoria categoria){
         this.nome = nome;
         this.preco = preco;
+        this.categoria = categoria;
     }
 
+    // Construtor protegido exigido pelo JPA
     protected Produto(){}
 
-    public Long getId(){
-        return id;
+    // Getters
+    public Long getId(){ return id; }
+    public String getNome(){ return nome; }
+    public Double getPreco(){ return preco; }
+    public Categoria getCategoria(){ return categoria; }
+    public Fornecedor getFornecedor(){ return fornecedor; }
+
+    // Setter de categoria: atualiza a referência no objeto em memória
+    public void setCategoria(Categoria categoria){
+        this.categoria = categoria;
     }
 
-    public String getNome(){
-        return nome;
+    // CORREÇÃO IMPORTANTE: atribui o parâmetro ao campo.
+    // Se você esquecer de atribuir, o campo fica nulo e o JPA pode persistir um produto sem fornecedor.
+    public void setFornecedor(Fornecedor fornecedorTech) {
+        this.fornecedor = fornecedorTech;
     }
 
-    public Double getPreco(){
-        return preco;
-    }
-
+    // Setters adicionais para permitir alterações antes de persistir
+    public void setNome(String nome) { this.nome = nome; }
+    public void setPreco(Double preco) { this.preco = preco; }
 }
