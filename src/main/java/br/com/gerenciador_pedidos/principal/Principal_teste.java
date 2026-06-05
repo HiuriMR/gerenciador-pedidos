@@ -1,19 +1,11 @@
 package br.com.gerenciador_pedidos.principal;
 
-import br.com.gerenciador_pedidos.model.Categoria;
-import br.com.gerenciador_pedidos.model.Fornecedor;
-import br.com.gerenciador_pedidos.model.Pedido;
-import br.com.gerenciador_pedidos.model.Produto;
 import br.com.gerenciador_pedidos.repository.CategoriaRepository;
 import br.com.gerenciador_pedidos.repository.FornecedorRepository;
 import br.com.gerenciador_pedidos.repository.PedidoRepository;
 import br.com.gerenciador_pedidos.repository.ProdutoRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Classe que popula dados de exemplo e executa consultas.
@@ -41,77 +33,43 @@ public class Principal_teste {
 
     @Transactional
     public void principal() {
-        // 1) Criar categorias (ids manuais neste exemplo)
-        Categoria categoriaEletronicos = new Categoria(1L, "Eletrônicos");
-        Categoria categoriaLivros = new Categoria(2L, "Livros");
-        // Salva categorias (cascade em Categoria persiste produtos se houver)
-        categoriaRepository.saveAll(List.of(categoriaEletronicos, categoriaLivros));
 
-        // 2) Criar fornecedores e persistir
-        Fornecedor fornecedorTech = new Fornecedor("Tech Supplier");
-        Fornecedor fornecedorLivros = new Fornecedor("Livraria Global");
-        fornecedorRepository.saveAll(List.of(fornecedorTech, fornecedorLivros));
+/*
+Criar a derived query correspondente:
 
-        // 3) Criar produtos em memória e associar categoria/fornecedor
-        Produto produto1 = new Produto("Notebook", 3500.0, categoriaEletronicos);
-        Produto produto2 = new Produto("Smartphone", 2500.0, categoriaEletronicos);
-        Produto produto3 = new Produto("Livro de Java", 100.0, categoriaLivros);
+1 - Retorne todos os produtos com o nome exato fornecido.
 
-        produto1.setFornecedor(fornecedorTech);
-        produto2.setFornecedor(fornecedorTech);
-        produto3.setFornecedor(fornecedorLivros);
+2 - Retorne todos os produtos associados a uma categoria específica.
 
-        // 4) Seed idempotente: salvar apenas produtos que ainda não existem
-        List<Produto> todos = List.of(produto1, produto2, produto3);
-        List<Produto> novos = todos.stream()
-                .filter(p -> !produtoRepository.existsByNome(p.getNome()))
-                .collect(Collectors.toList());
+3 - Retorne produtos com preço maior que o valor fornecido.
 
-        // Persistir novos produtos e obter instâncias gerenciadas
-        List<Produto> salvos = produtoRepository.saveAll(novos);
+4 - Retorne produtos com preço menor que o valor fornecido.
 
-        // Se alguns produtos já existiam, buscar suas instâncias gerenciadas para montar pedidos
-        for (Produto p : todos) {
-            if (salvos.stream().noneMatch(s -> s.getNome().equals(p.getNome()))) {
-                produtoRepository.findByNome(p.getNome()).ifPresent(salvos::add);
-            }
-        }
+5 - Retorne produtos cujo nome contenha o termo especificado.
 
-        // 5) Criar pedidos usando instâncias gerenciadas (salvos ou buscados)
-        Pedido pedido1 = new Pedido(1L, LocalDate.now());
-        Pedido pedido2 = new Pedido(2L, LocalDate.now().minusDays(1));
+6 - Retorne pedidos que ainda não possuem uma data de entrega.
 
-        // Garantir que usamos instâncias gerenciadas (busca por nome)
-        Produto pNotebook = produtoRepository.findByNome("Notebook").orElseThrow();
-        Produto pLivro = produtoRepository.findByNome("Livro de Java").orElseThrow();
-        Produto pSmartphone = produtoRepository.findByNome("Smartphone").orElseThrow();
+7 - Retorne pedidos com data de entrega preenchida.
 
-        pedido1.setProdutos(List.of(pNotebook, pLivro));
-        pedido2.setProdutos(List.of(pSmartphone));
+8 - Retorne produtos de uma categoria ordenados pelo preço de forma crescente.
 
-        // Salvar pedidos (produtos já persistidos, portanto sem TransientPropertyValueException)
-        pedidoRepository.saveAll(List.of(pedido1, pedido2));
+9 - Retorne produtos de uma categoria ordenados pelo preço de forma decrescente.
 
-        // 6) Consultas e iterações dentro da transação — seguro para acessar coleções LAZY
-        System.out.println("Produtos na categoria Eletrônicos:");
-        categoriaRepository.findById(1L).ifPresent(categoria ->
-                categoria.getProdutos().forEach(produto ->
-                        System.out.println(" - " + produto.getNome())
-                )
-        );
+10 - Retorne a contagem de produtos em uma categoria específica.
 
-        System.out.println("\nPedidos e seus produtos:");
-        pedidoRepository.findAll().forEach(pedido -> {
-            System.out.println("Pedido " + pedido.getId() + ":");
-            pedido.getProdutos().forEach(produto ->
-                    System.out.println(" - " + produto.getNome())
-            );
-        });
+11 - Retorne a contagem de produtos cujo preço seja maior que o valor fornecido.
 
-        System.out.println("\nProdutos e seus fornecedores:");
-        produtoRepository.findAll().forEach(produto ->
-                System.out.println("Produto: " + produto.getNome() +
-                        ", Fornecedor: " + produto.getFornecedor().getNome())
-        );
+12 - Retorne produtos com preço menor que o valor fornecido ou cujo nome contenha o termo especificado.
+
+13 - Retorne pedidos feitos após uma data específica.
+
+14 - Retorne pedidos feitos antes de uma data específica. , 15 - Retorne pedidos feitos em um intervalo de datas.
+
+16 - Retorne os três produtos mais caros.
+
+17 - Retorne os cinco produtos mais baratos de uma categoria.
+
+* */
+
     }
 }
