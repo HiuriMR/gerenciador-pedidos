@@ -71,4 +71,9 @@ public class Produto {
     // Setters adicionais para permitir alterações antes de persistir
     public void setNome(String nome) { this.nome = nome; }
     public void setPreco(Double preco) { this.preco = preco; }
+
+    @Override
+    public String toString() {
+        return this.nome + " - R$" + this.preco;
+    }
 }

@@ -26,7 +26,12 @@ public class SeedData implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
+        // Apaga tudo
+        produtoRepository.deleteAll();
+        fornecedorRepository.deleteAll();
+        categoriaRepository.deleteAll();
 
+        // Agora insere novamente
         CategoriaEletronicosSeed.insert(categoriaRepository, fornecedorRepository, produtoRepository);
         CategoriaLivrosSeed.insert(categoriaRepository, fornecedorRepository, produtoRepository);
         CategoriaAlimentosSeed.insert(categoriaRepository, fornecedorRepository, produtoRepository);
